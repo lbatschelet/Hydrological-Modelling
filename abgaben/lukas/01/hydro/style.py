@@ -1,4 +1,4 @@
-"""Shared matplotlib styling for CAMELS-CH exercise plots."""
+"""Shared matplotlib styling. Titles are Helvetica Neue Bold and left-aligned."""
 
 from __future__ import annotations
 
@@ -8,27 +8,23 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from matplotlib.font_manager import FontProperties
 
-_ROOT = Path(__file__).resolve().parents[1]
-_FONT_CACHE = _ROOT / ".mplconfig" / "fonts"
 _HN_TTC = Path("/System/Library/Fonts/HelveticaNeue.ttc")
-# Face index 1 = Helvetica Neue Bold (see TTCollection listing)
 _HN_BOLD_INDEX = 1
 
+_font_cache: Path | None = None
 _title_font: FontProperties | None = None
 
 
-def _ensure_helvetica_neue_bold() -> Path:
-    """Extract Bold from the system TTC into a local cache file."""
-    out = _FONT_CACHE / "HelveticaNeue-Bold.ttf"
+def _ensure_helvetica_neue_bold(cache: Path) -> Path:
+    out = cache / "HelveticaNeue-Bold.ttf"
     if out.exists():
         return out
 
     from fontTools.ttLib import TTCollection
 
-    _FONT_CACHE.mkdir(parents=True, exist_ok=True)
-    ttc = TTCollection(str(_HN_TTC))
-    font = ttc.fonts[_HN_BOLD_INDEX]
-    font.save(str(out))
+    cache.mkdir(parents=True, exist_ok=True)
+    collection = TTCollection(str(_HN_TTC))
+    collection.fonts[_HN_BOLD_INDEX].save(str(out))
     return out
 
 
@@ -36,14 +32,13 @@ def title_font(size: float | None = None) -> FontProperties:
     """Helvetica Neue Bold for plot titles."""
     global _title_font
     if _title_font is None:
-        path = _ensure_helvetica_neue_bold()
+        if _font_cache is None:
+            raise RuntimeError("Call apply_style(font_cache) before drawing titles")
+        path = _ensure_helvetica_neue_bold(_font_cache)
         font_manager.fontManager.addfont(str(path))
         _title_font = FontProperties(fname=str(path))
     fp = _title_font.copy()
-    if size is not None:
-        fp.set_size(size)
-    else:
-        fp.set_size(plt.rcParams.get("axes.titlesize", 13))
+    fp.set_size(size if size is not None else plt.rcParams.get("axes.titlesize", 13))
     return fp
 
 
@@ -52,8 +47,11 @@ def set_title(ax, text: str, *, size: float | None = None, pad: float = 12) -> N
     ax.set_title(text, loc="left", pad=pad, fontproperties=title_font(size))
 
 
-def apply_style() -> None:
-    """Clean Helvetica Neue body text; titles via set_title()."""
+def apply_style(font_cache: Path) -> None:
+    """Clean Helvetica Neue body text. Titles via set_title()."""
+    global _font_cache, _title_font
+    _font_cache = font_cache
+    _title_font = None
     plt.rcParams.update(
         {
             "font.family": "sans-serif",
@@ -88,5 +86,4 @@ def apply_style() -> None:
             "axes.unicode_minus": False,
         }
     )
-    # Warm up title font registration
     title_font()
