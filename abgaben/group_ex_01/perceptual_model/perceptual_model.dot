@@ -1,12 +1,12 @@
 // Perceptual model, catchment 2303 (Thur @ Jonschwil-Mühlau)
 // Render: .venv/bin/python abgaben/group_ex_01/perceptual_model/build.py (A4 PDF + PNG)
 digraph perceptual_model {
-  graph [rankdir=TB, fontname="Helvetica", nodesep=0.35, ranksep=0.4,
+  graph [rankdir=TB, fontname="Helvetica", nodesep=0.55, ranksep=0.4,
          pad=0, newrank=true, splines=ortho,
          size="7.5,10.9!", ratio=fill];  // A4 portrait minus margins
   node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled",
          fillcolor="#f2f2f2", color="#666666", penwidth=1, margin="0.12,0.06"];
-  edge  [color="#555555", arrowsize=0.7, penwidth=1.1, fontname="Helvetica"];
+  edge  [color="#1a1a1a", arrowsize=0.7, penwidth=1.6, fontname="Helvetica"];
 
   // ---- Water-balance terms outside the system boundary --------------------
   node [style="rounded,filled,bold", fillcolor="#e3d4f5", color="#7a4fb5",
@@ -65,7 +65,7 @@ digraph perceptual_model {
             fillcolor="#cfe3f2", color="#2b7ea1"];
 
     snow -> snowpack -> melt -> surf;
-    snowpack -> subl [color="#7a4fb5"];
+    snowpack -> subl [color="#8a44d4"];
     rain -> tf -> surf;
     rain -> interc;
     surf -> d_surf;
@@ -87,6 +87,8 @@ digraph perceptual_model {
     {rank=same; snow; rain}
     {rank=same; interc; snowpack}
     {rank=same; tf; melt; subl}
+    snow [group=snowcol]; snowpack [group=snowcol]; melt [group=snowcol];
+    rain [group=raincol]; tf [group=raincol];
     {rank=same; quick; infil}
     {rank=same; interf; perc; capil}
     {rank=same; soil; uptake}
@@ -95,10 +97,10 @@ digraph perceptual_model {
 
   P -> snow;
   P -> rain;
-  {subl interc uptake} -> evap [color="#7a4fb5"];
-  uptake -> trans [color="#7a4fb5"];
-  deep -> G [color="#7a4fb5"];
-  thur -> Q [color="#7a4fb5"];
+  {subl interc uptake} -> evap [color="#8a44d4"];
+  uptake -> trans [color="#8a44d4"];
+  deep -> G [color="#8a44d4"];
+  thur -> Q [color="#8a44d4"];
   {rank=same; G; Q}
 
   // Placeholder: the water-balance equation is typeset here by a4_page.tex.
