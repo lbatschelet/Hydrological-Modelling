@@ -1,0 +1,31 @@
+% A4 page: the Graphviz drawing (vector) plus the water-balance equation typeset
+% as vector text over the `eq` placeholder node. Built by build.py, which writes
+% anchor.tex (\EqX, \EqY, \EqWidth as fractions of the drawing).
+\documentclass{article}
+\usepackage[a4paper,margin=10mm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\pagestyle{empty}
+% Colours match the flowchart: storages blue, water-balance terms purple.
+\definecolor{storage}{HTML}{2B7EA1}
+\definecolor{flux}{HTML}{7A4FB5}
+\definecolor{body}{HTML}{333333}
+\input{anchor.tex}
+\newsavebox{\diagram}
+\begin{document}
+\centering\noindent
+\sbox{\diagram}{\includegraphics[trim=36bp 36bp 36bp 36bp,clip,width=\textwidth,height=0.97\textheight,keepaspectratio]{diagram.pdf}}%
+\vspace*{\fill}
+\begin{tikzpicture}
+  \node[inner sep=0, anchor=south west] (img) at (0,0) {\usebox{\diagram}};
+  \begin{scope}[x={(img.south east)}, y={(img.north west)}]
+    \node[inner sep=0] at (\EqX, \EqY) {\resizebox{\EqWidth\wd\diagram}{!}{\color{body}$\displaystyle
+      \textcolor{storage}{\frac{dS}{dt}}
+      = \textcolor{flux}{P} - \textcolor{flux}{\mathit{ET}} - \textcolor{flux}{G} - \textcolor{flux}{Q}
+      \quad [\mathrm{mm\,d^{-1}}]$}};
+  \end{scope}
+\end{tikzpicture}
+\vspace*{\fill}
+\end{document}

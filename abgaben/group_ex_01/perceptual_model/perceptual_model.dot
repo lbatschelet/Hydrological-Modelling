@@ -1,0 +1,107 @@
+// Perceptual model, catchment 2303 (Thur @ Jonschwil-Mühlau)
+// Render: .venv/bin/python abgaben/group_ex_01/perceptual_model/build.py (A4 PDF + PNG)
+digraph perceptual_model {
+  graph [rankdir=TB, fontname="Helvetica", nodesep=0.35, ranksep=0.4,
+         pad=0, newrank=true, splines=ortho,
+         size="7.5,10.9!", ratio=fill];  // A4 portrait minus margins
+  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled",
+         fillcolor="#f2f2f2", color="#666666", penwidth=1, margin="0.12,0.06"];
+  edge  [color="#555555", arrowsize=0.7, penwidth=1.1, fontname="Helvetica"];
+
+  // ---- Water-balance terms outside the system boundary --------------------
+  node [style="rounded,filled,bold", fillcolor="#e3d4f5", color="#7a4fb5",
+        fontcolor="#3d1f66"];
+  P [label=<<B>P</B> Precipitation<BR/><FONT POINT-SIZE="9">water enters the catchment</FONT>>];
+  Q [label=<<B>Q</B> Streamflow @ Mühlau<BR/><FONT POINT-SIZE="9">water leaves through the gauge</FONT>>];
+  G [label=<<B>G</B> Loss to groundwater<BR/><FONT POINT-SIZE="9">water bypasses the gauge</FONT>>];
+
+  subgraph cluster_E {
+    label=<<B>ET</B> Evapotranspiration = Evaporation + Transpiration>;
+    labeljust="l"; labelloc="b"; fontsize=11; fontcolor="#3d1f66";
+    style="rounded,filled"; fillcolor="#f6f0fc"; color="#7a4fb5"; penwidth=1.5;
+    evap  [label=<<B>Evaporation</B><BR/><FONT POINT-SIZE="9">from canopy, soil surface<BR/>and snow (sublimation)</FONT>>];
+    trans [label=<<B>Transpiration</B><BR/><FONT POINT-SIZE="9">water is released<BR/>by plants via stomata</FONT>>];
+  }
+
+  subgraph cluster_catchment {
+    label="Catchment system  (S = interception + snowpack + soil + groundwater)";
+    labelloc="b"; fontsize=13; fontcolor="#1f6f8b";
+    style="rounded,dashed"; color="#3fa7c9"; penwidth=2;
+
+    // Storages
+    node [shape=cylinder, style=filled, fillcolor="#d6ecf7", color="#2b7ea1",
+          fontcolor="#123c4f", fontsize=11];
+    snowpack [label=<<B>Snowpack (S)</B><BR/><FONT POINT-SIZE="9">snow accumulates<BR/>in winter</FONT>>];
+    soil     [label=<<B>Soil storage (S)</B><BR/><FONT POINT-SIZE="9">water held in the<BR/>root zone</FONT>>];
+    interc   [label=<<B>Interception (S)</B><BR/><FONT POINT-SIZE="9">rain is held on<BR/>leaves and canopy</FONT>>];
+    gw       [label=<<B>Groundwater<BR/>storage (S)</B><BR/><FONT POINT-SIZE="9">slow, long-term<BR/>storage</FONT>>];
+
+    // Processes
+    node [shape=box, style="rounded,filled", fillcolor="#f2f2f2", color="#666666",
+          fontcolor="black", fontsize=11];
+    snow   [label=<<B>Snow</B><BR/><FONT POINT-SIZE="9">P at T &lt; ~0 °C</FONT>>];
+    rain   [label=<<B>Rain</B><BR/><FONT POINT-SIZE="9">P at T &gt; ~0 °C</FONT>>];
+    subl   [label=<<B>Sublimation</B><BR/><FONT POINT-SIZE="9">snow turns directly<BR/>into vapour</FONT>>];
+    melt   [label=<<B>Snowmelt</B><BR/><FONT POINT-SIZE="9">acts like rain once<BR/>it reaches the ground</FONT>>];
+    tf     [label=<<B>Throughfall</B><BR/><FONT POINT-SIZE="9">rain reaches the ground<BR/>through the canopy</FONT>>];
+    surf   [label=<<B>Water at soil surface</B>>];
+    quick  [label=<<B>Quick runoff</B><BR/><FONT POINT-SIZE="9">overland flow:<BR/>infiltration or<BR/>saturation excess</FONT>>];
+    infil  [label=<<B>Infiltration</B><BR/><FONT POINT-SIZE="9">water enters the soil</FONT>>];
+    // Decisions
+    node [shape=diamond, style=filled, fillcolor="#fff4d6", color="#c79a1e",
+          fontcolor="black", fontsize=10, margin="0.02,0.02"];
+    d_surf [label=<Input rate &gt;<BR/>infiltration capacity<BR/>or soil saturated?>];
+    node [shape=box, style="rounded,filled", fillcolor="#f2f2f2", color="#666666",
+          fontcolor="black", fontsize=11, margin="0.12,0.06"];
+    drain  [label=<<B>Gravity drainage</B><BR/><FONT POINT-SIZE="9">water above field capacity<BR/>drains from the soil</FONT>>];
+    interf [label=<<B>Interflow</B><BR/><FONT POINT-SIZE="9">lateral subsurface flow<BR/>on slopes</FONT>>];
+    uptake [label=<<B>Upward water loss</B><BR/><FONT POINT-SIZE="9">root water uptake → transpiration<BR/>soil evaporation → evaporation</FONT>>];
+    perc   [label=<<B>Percolation</B><BR/><FONT POINT-SIZE="9">water drains downwards</FONT>>];
+    capil  [label=<<B>Capillary rise</B><BR/><FONT POINT-SIZE="9">upward flow in dry periods</FONT>>,
+            style="rounded,filled,dashed"];
+    base   [label=<<B>Baseflow</B><BR/><FONT POINT-SIZE="9">groundwater flows out<BR/>into the river</FONT>>];
+    deep   [label=<<B>Deep percolation</B><BR/><FONT POINT-SIZE="9">drains below the gauge<BR/>(regional aquifer)</FONT>>];
+    thur   [label=<<B>River Thur</B><BR/><FONT POINT-SIZE="9">channel flow to outlet</FONT>>,
+            fillcolor="#cfe3f2", color="#2b7ea1"];
+
+    snow -> snowpack -> melt -> surf;
+    snowpack -> subl [color="#7a4fb5"];
+    rain -> tf -> surf;
+    rain -> interc;
+    surf -> d_surf;
+    d_surf -> quick [xlabel=" yes ", fontsize=10, fontcolor="#8a6a12"];
+    d_surf -> infil [xlabel=" no ", fontsize=10, fontcolor="#8a6a12"];
+    quick -> thur;
+    infil -> soil;
+    soil -> drain;
+    drain -> interf;
+    drain -> perc;
+    interf -> thur;
+    soil -> uptake;
+    perc -> gw;
+    gw -> capil [style=dashed, constraint=false];
+    capil -> soil [style=dashed, constraint=false];
+    gw -> base -> thur;
+    gw -> deep;
+
+    {rank=same; snow; rain}
+    {rank=same; interc; snowpack}
+    {rank=same; tf; melt; subl}
+    {rank=same; quick; infil}
+    {rank=same; interf; perc; capil}
+    {rank=same; soil; uptake}
+    {rank=same; base; deep}
+  }
+
+  P -> snow;
+  P -> rain;
+  {subl interc uptake} -> evap [color="#7a4fb5"];
+  uptake -> trans [color="#7a4fb5"];
+  deep -> G [color="#7a4fb5"];
+  thur -> Q [color="#7a4fb5"];
+  {rank=same; G; Q}
+
+  // Placeholder: the water-balance equation is typeset here by a4_page.tex.
+  eq [shape=none, style="", label="", width=3.6, height=0.7, fixedsize=true];
+  evap -> eq [style=invis, minlen=2];
+}
