@@ -9,11 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Parameters
-total_time_steps = 70
+total_time_steps = 70 # storage content is approaching 0 after 70 time steps
 precipitation_per_time_step = 10
 precipitation_duration = 10
 storage_content = 0
-outflow_constant = 0.1
+outflow_constant = 0.1 # value between 0 and 1 we just chose randomly
 time_steps = 0
 
 storage_content_list = []
@@ -38,9 +38,11 @@ print(outflow_list)
 
 plt.plot(storage_content_list)
 plt.plot(outflow_list)
+plt.legend(['Storage Content', 'Outflow'])
+plt.xlabel('Time Steps')
+plt.ylabel('Storage Content and Outflow')
+plt.title('Linear Storage')
 plt.show()
-
-
 
 
 
@@ -49,6 +51,30 @@ plt.show()
 # > The outflow from the first reservoir is the inflow to the next.
 # > Each storage has its own parameter k. Get the maximum discharge
 # for all 9 combinations of k1 and k2 with values = 0.1, 0.4, 0.7.
+
+from storage import cascade, max_discharge_grid
+
+k_values = [0.1, 0.4, 0.7]
+inflow = [
+    precipitation_per_time_step if step < precipitation_duration else 0
+    for step in range(total_time_steps)
+]
+
+for k1, k2, max_q in max_discharge_grid(inflow, k_values):
+    print(f"k1={k1}, k2={k2}, max Q2={max_q:.3f} mm")
+
+for k1 in k_values:
+    for k2 in k_values:
+        _, outflow_2 = cascade(inflow, k1, k2)
+        plt.plot(outflow_2, label=f"k1={k1}, k2={k2}")
+
+plt.xlabel("Time Steps")
+plt.ylabel("Outflow of second storage [mm]")
+plt.title("Storage Cascade")
+plt.legend()
+plt.show()
+
+
 
 
 
