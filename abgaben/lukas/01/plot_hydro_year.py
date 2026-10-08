@@ -12,6 +12,7 @@ from hydro.load import load_fluxes, load_gauge
 from hydro.paths import find_data_root, observation_csv, simulation_csv, topography_csv
 from hydro.plot_hydro_year import plot_hydro_year
 from hydro.series import select_period
+# Plotstil aus plot_style.py im Repo-Root, geladen über hydro.style.
 from hydro.style import apply_style
 
 HERE = Path(__file__).resolve().parent

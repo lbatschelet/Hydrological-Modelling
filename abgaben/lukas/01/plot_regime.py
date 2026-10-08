@@ -11,6 +11,7 @@ from hydro.load import load_discharge, load_gauge
 from hydro.paths import find_data_root, observation_csv, topography_csv
 from hydro.plot_regime import plot_regime
 from hydro.series import regime_mean, with_calendar, yearly_monthly_means
+# Plotstil aus plot_style.py im Repo-Root, geladen über hydro.style.
 from hydro.style import apply_style
 
 HERE = Path(__file__).resolve().parent
