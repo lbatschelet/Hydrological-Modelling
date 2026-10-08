@@ -7,12 +7,13 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from storage import simulate
+from storage import simulate, simulate_limited
 
 # Gemeinsamer Plotstil. Definitionen stehen in plot_style.py im Repo-Root.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from plot_style import (  # noqa: E402
     LINE_COLORS,
+    ET_COLOR,
     OUTFLOW_COLOR,
     STORAGE_COLOR,
     apply_style,
@@ -75,10 +76,25 @@ print(f"Saved: {FIGURES / 'storage_cascade.png'}")
 plt.show()
 
 
-# Exercise 2c – Storage max capacity & ET
-# ET as a function of soil moisture θ and two parameters:
-#   θwp: (permanent) wilting point
-#   θc: retention capacity, often called field capacity
-#
-# For a single linear reservoir, add a maximum storage capacity.
-# Then add ET = ET0 * (S(t) / Smax) ** 0.5 with ET0 = 2 mm/d
+# Exercise 2c – Storage max capacity and ET
+# Soil-moisture form (θwp, θc) lives in evapotranspiration.et_from_soil_moisture.
+# The reservoir uses ET = ET0 * sqrt(S / Smax), ET0 = 2 mm per step.
+# Smax is below the uncapped peak of about 65 mm, so the limit is visible.
+
+smax = 40
+et0 = 2
+
+limited_storage, limited_outflow, et = simulate_limited(inflow, k, smax, et0)
+
+fig, ax = new_figure()
+ax.plot(storage, color=STORAGE_COLOR, lw=1.5, ls="--", label="Storage without limit")
+ax.plot(limited_storage, color=STORAGE_COLOR, lw=2.2, label="Storage")
+ax.plot(limited_outflow, color=OUTFLOW_COLOR, lw=2.2, label="Outflow")
+ax.plot(et, color=ET_COLOR, lw=2.2, label="ET")
+ax.set_xlabel("Time steps")
+ax.set_ylabel("Storage, outflow and ET [mm]")
+set_title(ax, "Linear storage with capacity and ET")
+style_axes(ax)
+fig.savefig(FIGURES / "storage_capacity_et.png")
+print(f"Saved: {FIGURES / 'storage_capacity_et.png'}")
+plt.show()
