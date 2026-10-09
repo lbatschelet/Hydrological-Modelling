@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from catchment_map.clip import clip_to_polygon
 from catchment_map.nested import inflowing_catchments
 from catchment_map.plot import plot_catchment_map
+from plot_style import apply_style
 
 
 def find_repo(start: Path) -> Path:
@@ -20,10 +21,23 @@ def find_repo(start: Path) -> Path:
     raise FileNotFoundError(f"No CAMELS-CH data above {start}")
 
 
+def _inflow_subtitle(inflowing: gpd.GeoDataFrame) -> str:
+    names = [str(name) for name in inflowing["water_body"]]
+    if not names:
+        return "No gauged basin lies fully inside this catchment."
+    if len(names) == 1:
+        return f"The {names[0]} is the gauged basin inside this catchment."
+    if len(names) == 2:
+        return f"The {names[0]} and the {names[1]} are the gauged basins inside this catchment."
+    head = ", the ".join(names[:-1])
+    return f"The {head} and the {names[-1]} are the gauged basins inside this catchment."
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--gauge", type=int, default=2303)
     args = parser.parse_args()
+    apply_style()
 
     repo = find_repo(Path(__file__).resolve().parent)
     data = repo / "data"
@@ -54,7 +68,8 @@ def main() -> None:
         landcover,
         outlet,
         inflowing,
-        title=f"{row.water_body}, {row.gauge_name} — Landbedeckung und Teileinzugsgebiete",
+        title=f"{row.water_body}, {row.gauge_name} — land cover and inflowing catchments",
+        subtitle=_inflow_subtitle(inflowing),
         station=station,
         rivers=rivers,
     )

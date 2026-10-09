@@ -17,7 +17,8 @@ from catchment_map.dem import (
     slope_degrees,
 )
 from catchment_map.hru import aggregate_landcover, hru_polygons
-from catchment_map.plot_hru import plot_hru_combined, plot_hru_map
+from catchment_map.plot_hru import hru_subtitle, plot_hru_combined, plot_hru_map
+from plot_style import apply_style
 
 
 def find_repo(start: Path) -> Path:
@@ -33,6 +34,7 @@ def main() -> None:
     parser.add_argument("--threshold", type=float, default=15.0, help="Slope threshold in degrees")
     parser.add_argument("--res", type=float, default=30.0, help="DEM resolution in metres")
     args = parser.parse_args()
+    apply_style()
 
     repo = find_repo(Path(__file__).resolve().parent)
     data = repo / "data"
@@ -70,13 +72,18 @@ def main() -> None:
     hrus.to_file(out_dir / f"hru_{args.gauge}.gpkg", layer="hru", driver="GPKG")
 
     row = outlet.iloc[0]
-    title = f"{row.water_body}, {row.gauge_name} — HRUs (Bodennutzung × Steilheit)"
-    fig = plot_hru_combined(hrus, outlet, title=title, threshold_deg=args.threshold)
+    title = f"{row.water_body}, {row.gauge_name} — HRUs (land cover × slope)"
+    subtitle = hru_subtitle(hrus)
+    fig = plot_hru_combined(
+        hrus, outlet, title=title, threshold_deg=args.threshold, subtitle=subtitle
+    )
     out = out_dir / f"hru_{args.gauge}_landuse_slope.png"
     fig.savefig(out, dpi=160, bbox_inches="tight")
     plt.close(fig)
 
-    fig2 = plot_hru_map(hrus, outlet, title=title, threshold_deg=args.threshold)
+    fig2 = plot_hru_map(
+        hrus, outlet, title=title, threshold_deg=args.threshold, subtitle=subtitle
+    )
     out2 = out_dir / f"hru_{args.gauge}_panels.png"
     fig2.savefig(out2, dpi=160, bbox_inches="tight")
     plt.close(fig2)

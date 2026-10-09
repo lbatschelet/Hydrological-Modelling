@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from plot_style import set_title
 
 LANDCOVER_COLORS = {
     "Wald": "#2F7D4A",
@@ -22,17 +28,17 @@ LANDCOVER_COLORS = {
     "Stausee": "#2C4F86",
 }
 LANDCOVER_LABELS = {
-    "Wald": "Wald",
-    "Siedl": "Siedlung",
-    "Stadtzentr": "Stadtzentrum",
-    "Obstanlage": "Obstanlage",
-    "Reben": "Reben",
-    "Sumpf": "Sumpf",
-    "Fels": "Fels",
-    "Geroell": "Geröll",
-    "Gletscher": "Gletscher",
-    "See": "See",
-    "Stausee": "Stausee",
+    "Wald": "Forest",
+    "Siedl": "Settlement",
+    "Stadtzentr": "Urban centre",
+    "Obstanlage": "Orchard",
+    "Reben": "Vineyard",
+    "Sumpf": "Wetland",
+    "Fels": "Rock",
+    "Geroell": "Scree",
+    "Gletscher": "Glacier",
+    "See": "Lake",
+    "Stausee": "Reservoir",
 }
 INFLOW_COLORS = ("#1B4F72", "#C46B3A", "#6C3483", "#117A65")
 
@@ -43,6 +49,7 @@ def plot_catchment_map(
     inflowing: gpd.GeoDataFrame,
     *,
     title: str,
+    subtitle: str | None = None,
     station: gpd.GeoDataFrame | None = None,
     rivers: gpd.GeoDataFrame | None = None,
 ) -> plt.Figure:
@@ -51,7 +58,7 @@ def plot_catchment_map(
     legend_handles: list = []
 
     outlet.plot(ax=ax, color="#F3F0E8", edgecolor="none")
-    legend_handles.append(Patch(facecolor="#F3F0E8", edgecolor="#BBBBBB", label="Übrige Fläche"))
+    legend_handles.append(Patch(facecolor="#F3F0E8", edgecolor="#BBBBBB", label="Other land"))
 
     present = [name for name in LANDCOVER_COLORS if name in set(landcover["OBJVAL"])]
     for name in present:
@@ -64,7 +71,7 @@ def plot_catchment_map(
 
     if rivers is not None and not rivers.empty:
         rivers.plot(ax=ax, color="#1D4E89", linewidth=0.35, alpha=0.85)
-        legend_handles.append(Line2D([0], [0], color="#1D4E89", lw=1.2, label="Fliessgewässer"))
+        legend_handles.append(Line2D([0], [0], color="#1D4E89", lw=1.2, label="Streams"))
 
     outlet.boundary.plot(ax=ax, color="#1A1A1A", linewidth=1.6)
     legend_handles.append(Line2D([0], [0], color="#1A1A1A", lw=1.6, label="Catchment"))
@@ -89,16 +96,16 @@ def plot_catchment_map(
     if station is not None and not station.empty:
         station.plot(ax=ax, color="#B01E1E", markersize=36, zorder=5)
         legend_handles.append(
-            Line2D([0], [0], marker="o", color="none", markerfacecolor="#B01E1E", markersize=7, label="Station")
+            Line2D([0], [0], marker="o", color="none", markerfacecolor="#B01E1E", markersize=7, label="Gauge")
         )
 
-    ax.set_title(title, loc="left", fontweight="bold", fontsize=13)
+    set_title(ax, title, subtitle=subtitle)
     ax.set_aspect("equal")
     km = FuncFormatter(lambda value, _pos: f"{value / 1000:.0f}")
     ax.xaxis.set_major_formatter(km)
     ax.yaxis.set_major_formatter(km)
-    ax.set_xlabel("Ost (LV95) [km]")
-    ax.set_ylabel("Nord (LV95) [km]")
+    ax.set_xlabel("Easting (LV95) [km]")
+    ax.set_ylabel("Northing (LV95) [km]")
     ax.legend(handles=legend_handles, loc="upper left", bbox_to_anchor=(1.01, 1), frameon=True)
     ax.grid(True, alpha=0.25)
     fig.tight_layout()

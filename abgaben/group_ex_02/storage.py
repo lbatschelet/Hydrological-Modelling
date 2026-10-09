@@ -13,7 +13,7 @@ def linear_step(storage: float, inflow: float, k: float) -> tuple[float, float]:
 def limited_step(
     storage: float, inflow: float, k: float, smax: float, et0: float
 ) -> tuple[float, float, float]:
-    """Linear outflow, then ET, then a cap. Excess above Smax leaves as discharge."""
+    """Linear outflow, then ET, then a cap. Water above Smax is added to the outflow."""
     outflow = k * storage
     updated = storage + inflow - outflow
     et = min(evapotranspiration(storage, smax, et0), max(updated, 0.0))

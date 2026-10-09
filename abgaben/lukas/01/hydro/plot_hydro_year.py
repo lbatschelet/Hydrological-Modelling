@@ -9,7 +9,12 @@ import pandas as pd
 from hydro.style import set_title
 
 
-def plot_hydro_year(period: pd.DataFrame, *, title: str) -> plt.Figure:
+def plot_hydro_year(
+    period: pd.DataFrame,
+    *,
+    title: str,
+    subtitle: str | None = None,
+) -> plt.Figure:
     """Draw one already selected period. Expects date, Q, P, T, PET."""
     fig, (ax_q, ax_t) = plt.subplots(
         2,
@@ -60,7 +65,7 @@ def plot_hydro_year(period: pd.DataFrame, *, title: str) -> plt.Figure:
     p_max = max(float(period["P"].max()), 1.0)
     ax_p.set_ylim(p_max * 2.2, 0)
 
-    set_title(ax_q, title)
+    set_title(ax_q, title, subtitle=subtitle)
 
     flux_handles, flux_labels = ax_q.get_legend_handles_labels()
     precip_handles, precip_labels = ax_p.get_legend_handles_labels()

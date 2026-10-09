@@ -1,66 +1,75 @@
-"""Shared figure style: Helvetica Neue, bold left-aligned titles."""
+"""Shared figure style. Color palette to aide my color blindness"""
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import matplotlib.pyplot as plt
-from matplotlib import font_manager
-from matplotlib.font_manager import FontProperties
+from cycler import cycler
 
-ROOT = Path(__file__).resolve().parent
-_HN_TTC = Path("/System/Library/Fonts/HelveticaNeue.ttc")
-_HN_BOLD_INDEX = 1
+_OKABE_ITO = (
+    "black",
+    "orange",
+    "sky_blue",
+    "bluish_green",
+    "yellow",
+    "blue",
+    "vermillion",
+    "reddish_purple",
+)
 
-STORAGE_COLOR = "#1F77B4"
-OUTFLOW_COLOR = "#D62728"
-ET_COLOR = "#2CA02C"
-LINE_COLORS = [
-    "#1F77B4",
-    "#D62728",
-    "#2CA02C",
-    "#FF7F0E",
-    "#9467BD",
-    "#8C564B",
-    "#E377C2",
-    "#7F7F7F",
-    "#17BECF",
-]
-
-_font_cache: Path | None = None
-_title_font: FontProperties | None = None
+# Petroff positions with the same contrast: blue, orange, purple.
+_LINE_COLOR_INDEX = (0, 6, 4)
+_LINE_DASHES = ("solid", "dashed", "dashdot")
 
 
-def _ensure_helvetica_neue_bold(cache: Path) -> Path:
-    out = cache / "HelveticaNeue-Bold.ttf"
-    if out.exists():
-        return out
-
-    from fontTools.ttLib import TTCollection
-
-    cache.mkdir(parents=True, exist_ok=True)
-    collection = TTCollection(str(_HN_TTC))
-    collection.fonts[_HN_BOLD_INDEX].save(str(out))
-    return out
+def _okabe_ito(name: str):
+    return plt.color_sequences["okabe_ito"][_OKABE_ITO.index(name)]
 
 
-def title_font(size: float | None = None) -> FontProperties:
-    """Helvetica Neue Bold for plot titles."""
-    global _title_font
-    if _title_font is None:
-        if _font_cache is None:
-            raise RuntimeError("Call apply_style() before drawing titles")
-        path = _ensure_helvetica_neue_bold(_font_cache)
-        font_manager.fontManager.addfont(str(path))
-        _title_font = FontProperties(fname=str(path))
-    fp = _title_font.copy()
-    fp.set_size(size if size is not None else plt.rcParams.get("axes.titlesize", 13))
-    return fp
+STORAGE_COLOR = _okabe_ito("blue")
+OUTFLOW_COLOR = _okabe_ito("vermillion")
+ET_COLOR = _okabe_ito("bluish_green")
 
 
-def set_title(ax, text: str, *, size: float | None = None, pad: float = 12) -> None:
-    """Left-aligned title in Helvetica Neue Bold."""
-    ax.set_title(text, loc="left", pad=pad, fontproperties=title_font(size))
+def line_style(index: int) -> dict:
+    """Colour and dash pattern. A set of lines is not identified by colour alone."""
+    colors = plt.color_sequences["petroff10"]
+    palette = [colors[i] for i in _LINE_COLOR_INDEX]
+    return {
+        "color": palette[index % len(palette)],
+        "linestyle": _LINE_DASHES[index // len(palette)],
+    }
+
+
+def set_title(
+    ax,
+    text: str,
+    *,
+    subtitle: str | None = None,
+    size: float | None = None,
+    pad: float = 12,
+) -> None:
+    """Left-aligned bold title. The subtitle is the sentence the figure is there to show."""
+    ax.set_title(
+        text,
+        loc="left",
+        pad=pad + (16 if subtitle else 0),
+        fontweight="bold",
+        fontsize=size or plt.rcParams["axes.titlesize"],
+    )
+    if not subtitle:
+        return
+    ax.annotate(
+        subtitle,
+        xy=(0, 1),
+        xycoords="axes fraction",
+        xytext=(0, 3),
+        textcoords="offset points",
+        ha="left",
+        va="bottom",
+        fontsize=plt.rcParams["font.size"],
+        color="0.25",
+        annotation_clip=False,
+    )
 
 
 def new_figure():
@@ -78,22 +87,16 @@ def style_axes(ax, *, legend_outside: bool = False) -> None:
         ax.legend(loc="upper right")
 
 
-def apply_style(font_cache: Path | None = None) -> None:
-    """Clean Helvetica Neue body text. Titles via set_title()."""
-    global _font_cache, _title_font
-    _font_cache = font_cache or (ROOT / ".mplconfig" / "fonts")
-    _title_font = None
+def apply_style() -> None:
+    """Helvetica, then Arial. Liberation Sans and DejaVu Sans if neither is installed."""
     plt.rcParams.update(
         {
             "font.family": "sans-serif",
-            "font.sans-serif": [
-                "Helvetica Neue",
-                "Helvetica",
-                "Arial",
-                "DejaVu Sans",
-            ],
+            "font.sans-serif": ["Helvetica", "Arial", "Liberation Sans", "DejaVu Sans"],
+            "axes.prop_cycle": cycler(color=plt.color_sequences["petroff10"]),
             "font.size": 11,
             "axes.titlesize": 13,
+            "axes.titleweight": "bold",
             "axes.titlelocation": "left",
             "axes.titlepad": 12,
             "axes.labelsize": 11,
@@ -117,4 +120,3 @@ def apply_style(font_cache: Path | None = None) -> None:
             "axes.unicode_minus": False,
         }
     )
-    title_font()

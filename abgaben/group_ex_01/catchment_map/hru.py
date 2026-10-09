@@ -25,7 +25,7 @@ LANDUSE_MAP = {
 
 
 def classify_slope(slope_deg: np.ndarray, threshold_deg: float = 15.0) -> np.ndarray:
-    """Map slope degrees to the two HRU classes flach / steil."""
+    """Two slope classes, stored as flach and steil."""
     return np.where(slope_deg >= threshold_deg, "steil", "flach")
 
 
@@ -33,7 +33,7 @@ def aggregate_landcover(
     landcover: gpd.GeoDataFrame,
     catchment: BaseGeometry,
 ) -> gpd.GeoDataFrame:
-    """Clip landcover, rename classes, fill gaps as Offenland."""
+    """Clip land cover to the catchment. Gaps, mostly open land, are stored as Offenland."""
     clipped = gpd.clip(landcover, catchment)
     if clipped.empty:
         covered = Polygon()

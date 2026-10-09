@@ -1,10 +1,10 @@
-"""Evapotranspiration for exercise 2c."""
+"""Evapotranspiration from storage, and from soil moisture between wilting point and field capacity."""
 
 from __future__ import annotations
 
 
 def evapotranspiration(storage: float, smax: float, et0: float) -> float:
-    """ET = ET0 * sqrt(S / Smax). Empty storage evaporates nothing."""
+    """ET0 times the square root of relative storage. Empty storage evaporates nothing."""
     if storage <= 0 or smax <= 0:
         return 0.0
     return et0 * (storage / smax) ** 0.5

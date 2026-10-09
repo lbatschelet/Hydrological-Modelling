@@ -1,4 +1,4 @@
-"""OUTPUT EXERCISE 1 — hydrological year of Q, P, T and PET."""
+"""Hydrological year of discharge, precipitation, temperature, and potential evapotranspiration."""
 
 from __future__ import annotations
 
@@ -12,13 +12,36 @@ from hydro.load import load_fluxes, load_gauge
 from hydro.paths import find_data_root, observation_csv, simulation_csv, topography_csv
 from hydro.plot_hydro_year import plot_hydro_year
 from hydro.series import select_period
-# Plotstil aus plot_style.py im Repo-Root, geladen über hydro.style.
+# Shared figure style, defined in plot_style.py at the repository root.
 from hydro.style import apply_style
 
 HERE = Path(__file__).resolve().parent
 DATA_ROOT = find_data_root(HERE)
-REPO = DATA_ROOT.parents[1]
 FIGURES = HERE / "figures"
+_MONTHS = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+def _hydro_year_subtitle(period: pd.DataFrame) -> str:
+    by_month = period.groupby(period["date"].dt.month)["Q"].sum()
+    wettest = _MONTHS[int(by_month.idxmax()) - 1]
+    peak_day = period.loc[period["Q"].idxmax(), "date"]
+    return (
+        f"Most runoff comes in {wettest}. "
+        f"The highest day is {peak_day.day} {_MONTHS[peak_day.month - 1]}."
+    )
 
 
 def main() -> None:
@@ -30,7 +53,7 @@ def main() -> None:
     parser.add_argument("--out-dir", type=Path, default=FIGURES)
     args = parser.parse_args()
 
-    apply_style(REPO / ".mplconfig" / "fonts")
+    apply_style()
     start = pd.Timestamp(args.start)
     end = pd.Timestamp(args.end)
     fluxes = load_fluxes(
@@ -45,6 +68,7 @@ def main() -> None:
             f"Hydrological year {start.year}/{end.year} — "
             f"CAMELS-CH {args.gauge} ({river}, {gauge_name})"
         ),
+        subtitle=_hydro_year_subtitle(period),
     )
     args.out_dir.mkdir(parents=True, exist_ok=True)
     out = args.out_dir / f"hydro_year_{args.gauge}_{start.year}_{end.year}.png"

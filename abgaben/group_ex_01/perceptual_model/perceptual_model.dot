@@ -1,12 +1,12 @@
 // Perceptual model, catchment 2303 (Thur @ Jonschwil-Mühlau)
 // Render: .venv/bin/python abgaben/group_ex_01/perceptual_model/build.py (A4 PDF + PNG)
 digraph perceptual_model {
-  graph [rankdir=TB, fontname="Helvetica", nodesep=0.55, ranksep=0.4,
+  graph [rankdir=TB, fontname="Arial", nodesep=0.55, ranksep=0.4,
          pad=0, newrank=true, splines=ortho,
          size="7.5,10.9!", ratio=fill];  // A4 portrait minus margins
-  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled",
+  node  [fontname="Arial", fontsize=11, shape=box, style="rounded,filled",
          fillcolor="#f2f2f2", color="#666666", penwidth=1, margin="0.12,0.06"];
-  edge  [color="#1a1a1a", arrowsize=0.7, penwidth=1.6, fontname="Helvetica"];
+  edge  [color="#1a1a1a", arrowsize=0.7, penwidth=1.6, fontname="Arial"];
 
   // ---- Water-balance terms outside the system boundary --------------------
   node [style="rounded,filled,bold", fillcolor="#e3d4f5", color="#7a4fb5",

@@ -19,6 +19,7 @@ def plot_regime(
     early_label: str,
     late_label: str,
     note: str,
+    subtitle: str | None = None,
 ) -> plt.Figure:
     """Twelve monthly means per period, connected by straight lines."""
     fig, ax = plt.subplots(figsize=(10, 5.5))
@@ -34,7 +35,7 @@ def plot_regime(
     ax.set_ylim(bottom=0)
     ax.set_xlabel("Months")
     ax.set_ylabel("Mean monthly discharge [m³/s]")
-    set_title(ax, title)
+    set_title(ax, title, subtitle=subtitle)
     ax.grid(True, axis="y", alpha=0.35)
     ax.legend(loc="upper right")
     ax.spines["right"].set_visible(False)
