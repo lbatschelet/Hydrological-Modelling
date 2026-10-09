@@ -68,7 +68,13 @@ for k1 in k_values:
         _, outflow_1 = simulate(inflow, k1)
         _, outflow_2 = simulate(outflow_1, k2)
         print(f"k1={k1}, k2={k2}, max Q2={max(outflow_2):.3f} mm")
-        ax.plot(outflow_2, lw=1.8, label=f"k1={k1}, k2={k2}", **line_style(color_index))
+        ax.plot(
+            outflow_2,
+            lw=1.8,
+            alpha=0.7,
+            label=f"k1={k1}, k2={k2}",
+            **line_style(color_index),
+        )
         color_index += 1
 
 ax.set_xlabel("Time steps")
@@ -78,7 +84,7 @@ set_title(
     "Storage cascade",
     subtitle="Swapping the two k values gives the same line. A slow store holds the peak down.",
 )
-style_axes(ax, legend_outside=True)
+style_axes(ax)
 fig.savefig(FIGURES / "storage_cascade.png")
 print(f"Saved: {FIGURES / 'storage_cascade.png'}")
 plt.show()

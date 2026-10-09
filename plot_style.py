@@ -77,14 +77,11 @@ def new_figure():
     return plt.subplots(figsize=(10, 5.5))
 
 
-def style_axes(ax, *, legend_outside: bool = False) -> None:
-    """Horizontal grid, open right side, legend."""
+def style_axes(ax) -> None:
+    """Horizontal grid, open right side, legend inside at the upper right."""
     ax.grid(True, axis="y", alpha=0.35)
     ax.spines["right"].set_visible(False)
-    if legend_outside:
-        ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1))
-    else:
-        ax.legend(loc="upper right")
+    ax.legend(loc="upper right", frameon=True, facecolor="white", framealpha=1)
 
 
 def apply_style() -> None:
