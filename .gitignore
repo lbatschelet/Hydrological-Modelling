@@ -1,4 +1,5 @@
 .venv/
+.cursor/
 .mplconfig/
 .pytest_cache/
 __pycache__/
