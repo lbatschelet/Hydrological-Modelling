@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import textwrap
+
 import matplotlib.pyplot as plt
 from cycler import cycler
 
@@ -47,12 +49,17 @@ def set_title(
     subtitle: str | None = None,
     size: float | None = None,
     pad: float = 12,
+    wrap: int = 88,
 ) -> None:
     """Left-aligned bold title. The subtitle is the sentence the figure is there to show."""
+    lines = 0
+    if subtitle:
+        subtitle = textwrap.fill(subtitle, width=wrap)
+        lines = subtitle.count("\n") + 1
     ax.set_title(
         text,
         loc="left",
-        pad=pad + (16 if subtitle else 0),
+        pad=pad + (15 * lines if lines else 0),
         fontweight="bold",
         fontsize=size or plt.rcParams["axes.titlesize"],
     )
@@ -69,7 +76,13 @@ def set_title(
         fontsize=plt.rcParams["font.size"],
         color="0.25",
         annotation_clip=False,
+        linespacing=1.25,
     )
+
+
+def figure_note(fig, text: str) -> None:
+    """Small left-aligned note under the axes."""
+    fig.text(0.01, 0.01, text, fontsize=8, color="0.4")
 
 
 def new_figure():
