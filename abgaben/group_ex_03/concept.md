@@ -48,11 +48,13 @@ A lumped set-up is what the exercise asks for first. Coupling those modules is e
 Same model, different input for P and T:
 
 1. **CAMELS catchment average** — what the catchment “felt” in the dataset we use for Q and PET  
-2. **MeteoSwiss stations SAE and EBK** — point precip and temperature (`rre150d0`, `tre200d0`)
+2. **MeteoSwiss stations Säntis (SAE) and Ebnat-Kappel (EBK)** — point precip and temperature (`rre150d0`, `tre200d0`)
 
 Q and PET stay from CAMELS in both runs, so the comparison is fair. Station precip will not match the catchment mean; that difference is part of the exercise (slide “Station versus CAMELS precip”).
 
-SAE is high (Säntis); EBK is lower in the region. Showing both makes the forcing effect visible without changing the model.
+Säntis is high; Ebnat-Kappel is lower in the region. Showing both makes the forcing effect visible without changing the model.
+
+Cumulative and daily station-vs-CAMELS plots (same layout as the course slide) live in `figures/precip_compare_2303_sae.png` and `…_ebk.png`. Over the full overlap, Säntis holds more water than the catchment mean (CAMELS / station ≈ 0.65); Ebnat-Kappel is close to the mean (≈ 0.98).
 
 ## Parameters
 
@@ -88,7 +90,7 @@ The 2019/20-only optimum barely beats the first guess for that year. Using it wo
 ## What we expect to see
 
 - **CAMELS run:** mean Q roughly in the right ballpark; peaks often too flat or mistimed; overflow events can spike too hard.  
-- **Station runs:** same model, shifted water balance and timing, because P and T are not the catchment mean. SAE (high) vs EBK (lower) should look different from each other and from CAMELS.  
+- **Station runs:** same model, shifted water balance and timing, because P and T are not the catchment mean. Säntis (high) vs Ebnat-Kappel (lower) should look different from each other and from CAMELS.  
 - **Good vs bad events:** pick windows where rain-on-snow or a clear rain peak is captured, and windows where the store empties too early or a station storm never existed in the catchment mean (or the reverse).
 
 ## Limitations (for the PDF)

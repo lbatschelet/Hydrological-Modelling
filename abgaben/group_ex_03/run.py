@@ -41,8 +41,8 @@ K = 0.2
 SMAX = 80.0
 
 STATIONS = {
-    "sae": "smn/ogd-smn_sae_d_historical.csv",
-    "ebk": "smn/ogd-smn_ebk_d_historical.csv",
+    "sae": ("smn/ogd-smn_sae_d_historical.csv", "Säntis"),
+    "ebk": ("smn/ogd-smn_ebk_d_historical.csv", "Ebnat-Kappel"),
 }
 
 
@@ -110,9 +110,10 @@ def main() -> None:
         forcing = camels
         forcing_label = "CAMELS catchment mean"
     else:
-        station_path = repo / "data" / "meteoswiss" / STATIONS[args.forcing]
+        rel_path, station_name = STATIONS[args.forcing]
+        station_path = repo / "data" / "meteoswiss" / rel_path
         forcing = with_station_forcing(camels, load_station(station_path))
-        forcing_label = f"MeteoSwiss {args.forcing.upper()}"
+        forcing_label = station_name
 
     start = pd.Timestamp(args.start)
     end = pd.Timestamp(args.end)

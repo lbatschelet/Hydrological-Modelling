@@ -34,10 +34,15 @@ def load_camels(obs_path: Path, sim_path: Path) -> pd.DataFrame:
 
 def load_station(path: Path) -> pd.DataFrame:
     """MeteoSwiss daily P and T. Columns: date, P, T."""
-    raw = pd.read_csv(path, sep=";")
+    # Some OGD files put a space after each semicolon in the header.
+    raw = pd.read_csv(path, sep=";", low_memory=False)
+    raw.columns = [name.strip() for name in raw.columns]
     out = pd.DataFrame(
         {
-            "date": pd.to_datetime(raw["reference_timestamp"], format="%d.%m.%Y %H:%M"),
+            "date": pd.to_datetime(
+                raw["reference_timestamp"].astype(str).str.strip(),
+                format="%d.%m.%Y %H:%M",
+            ),
             "P": pd.to_numeric(raw["rre150d0"], errors="coerce"),
             "T": pd.to_numeric(raw["tre200d0"], errors="coerce"),
         }
