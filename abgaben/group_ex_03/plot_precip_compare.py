@@ -18,7 +18,6 @@ from plot_style import (  # noqa: E402
     STORAGE_COLOR,
     apply_style,
     figure_note,
-    set_title,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -50,7 +49,8 @@ def plot_compare(
     note: str,
 ) -> plt.Figure:
     """Cumulative 1:1 panel and daily scatter, as on the course slide."""
-    fig, (ax_c, ax_s) = plt.subplots(1, 2, figsize=(11, 5))
+    fig, (ax_c, ax_s) = plt.subplots(1, 2, figsize=(10, 4.2))
+    fig.subplots_adjust(left=0.09, right=0.98, bottom=0.15, top=0.84, wspace=0.28)
 
     cum_station = paired["P_station"].cumsum()
     cum_camels = paired["P_camels"].cumsum()
@@ -59,7 +59,6 @@ def plot_compare(
     ax_c.plot([0, limit], [0, limit], color=OUTFLOW_COLOR, lw=1.4, label="1:1 line")
     ax_c.set_xlabel(f"Cumulated precip {station_label} [mm]")
     ax_c.set_ylabel("Cumulated precip CAMELS [mm]")
-    ax_c.set_aspect("equal", adjustable="box")
     ax_c.set_xlim(0, limit * 1.02)
     ax_c.set_ylim(0, limit * 1.02)
     ax_c.grid(True, alpha=0.35)
@@ -79,17 +78,15 @@ def plot_compare(
     ax_s.plot([0, day_limit], [0, day_limit], color=OUTFLOW_COLOR, lw=1.4, label="1:1 line")
     ax_s.set_xlabel(f"Precip {station_label} [mm/d]")
     ax_s.set_ylabel("Precip CAMELS [mm/d]")
-    ax_s.set_aspect("equal", adjustable="box")
     ax_s.set_xlim(0, day_limit * 1.05)
     ax_s.set_ylim(0, day_limit * 1.05)
     ax_s.grid(True, alpha=0.35)
     ax_s.spines["right"].set_visible(False)
     ax_s.legend(loc="upper left")
 
-    set_title(ax_c, title, subtitle=subtitle)
-    ax_s.set_title("")  # title sits on the left panel only
+    fig.suptitle(title, fontweight="bold", x=0.09, ha="left", fontsize=13, y=0.98)
+    fig.text(0.09, 0.90, subtitle, fontsize=11, color="0.25", ha="left", va="top")
     figure_note(fig, note)
-    fig.tight_layout(rect=[0, 0.05, 1, 1])
     return fig
 
 
@@ -146,7 +143,8 @@ def main() -> None:
             ),
         )
         out = args.out_dir / f"precip_compare_{args.gauge}_{key}.png"
-        fig.savefig(out)
+        # Keep the manual margins; global savefig.bbox=tight would re-open the gap.
+        fig.savefig(out, bbox_inches=None)
         plt.close(fig)
         print(f"Saved: {out}")
         print(subtitle)
