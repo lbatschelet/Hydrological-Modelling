@@ -9,13 +9,13 @@ from model import simulate
 from run import IMAX, MF, TT, K, SMAX, plot_runoff
 
 
-#folder for diagrammes
+#Folder for diagrams
 HERE = Path(__file__).resolve().parent
 FIGURES = HERE / "figures"
 FIGURES.mkdir(parents=True, exist_ok=True)
 
 
-#load the CAMELS data
+#Load the CAMELS data
 data_root = find_data_root(HERE)
 
 data = load_camels(
@@ -31,7 +31,7 @@ data = data[
 ].copy()
 
 
-#model for entire year, so that the storages are not reset (later we select individual months)
+#Model for entire year, so that the storages are not reset (later we select individual months)
 result = simulate(
     data["P"].tolist(),
     data["T"].tolist(),
@@ -60,13 +60,13 @@ events = [
 #Diagram for every chosen period (the chosen months for comparison)
 for name, start, end in events:
 
-    #pick only our timeframes
+    #Pick only our timeframes
     period = data[
         (data["date"] >= start) &
         (data["date"] <= end)
     ].copy()
 
-    #use original plot funciton
+    #Use the original plot function
     fig = plot_runoff(
         period,
         title="Flowerpot — Thur, Jonschwil-Mühlau",
@@ -81,14 +81,14 @@ for name, start, end in events:
     ax = fig.axes[0]
     ax.lines[0].set_color("#D95F02")
 
-    #update legend
+    #Update legend
     ax.legend(
         handles=[ax.lines[0], ax.lines[1], fig.axes[1].patches[0]],
         labels=["Observed Q", "Modelled Q", "P"],
         loc="upper right"
     )
 
-    # set x-axis to certain days within a month (not whole year)
+    #Set x-axis to certain days within a month (not whole year)
     first_day = pd.Timestamp(start)
     last_day = pd.Timestamp(end)
 
@@ -108,10 +108,10 @@ for name, start, end in events:
         last_day + pd.Timedelta(hours=12)
     )
 
-    #set same alignment as other plots
+    #Set same alignment as other plots
     fig.autofmt_xdate(rotation=30, ha="right")
 
-    #save
+    #Save
     filename = "discharge_regime_" + name.lower().replace(" ", "_") + ".png"
     out = FIGURES / filename
 
