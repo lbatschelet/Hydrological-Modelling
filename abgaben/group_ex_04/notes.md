@@ -43,4 +43,6 @@ One-at-a-time around the optimum (Δ fitness on cal):
 Honest: overall the model is only middling (cal NSE ~0.44). Plots use `plot_style.set_title` / `figure_note`.
 
 - **Better** (`event_better_2010-07-09_…`): summer 2010 pulse — timing and magnitude roughly in the ballpark (still not perfect).  
-- **Bad** (`event_bad_2020-01-28_…`): early Feb 2020 — obs ~31 mm/d, model ~⅓ of that. Likely rain-on-snow / fast runoff the lumped temp-index soil cannot catch.
+- **Bad** (`event_bad_2020-01-28_…`): early Feb 2020 — **rain-on-snow** (confirmed with MeteoSwiss). Obs ~31 mm/d, lumped ~⅓ of that; temp-index soil cannot catch the melt pulse.
+
+Same windows with an extra line (`event_*_hru_bands_*`): Ex04 lumped vs `future_ideas` cover HRUs × elevation bands (+ROS). Not part of the Ex04 lumped deliverable — comparison only.
