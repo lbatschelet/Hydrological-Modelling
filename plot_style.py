@@ -51,33 +51,36 @@ def set_title(
     pad: float = 12,
     wrap: int = 88,
 ) -> None:
-    """Left-aligned bold title. The subtitle is the sentence the figure is there to show."""
-    lines = 0
+    """
+    Left-aligned bold title, optional subtitle directly underneath.
+
+    Both share the same left edge. Subtitle sits clearly below the title
+    (not touching). Callers should leave headroom, e.g.
+    ``fig.tight_layout(rect=[0, 0.05, 1, 0.88])``.
+    """
+    # Draw both lines ourselves: same left edge, clear vertical gap.
+    ax.set_title("")
+    title_size = size or plt.rcParams["axes.titlesize"]
     if subtitle:
         subtitle = textwrap.fill(subtitle, width=wrap)
-        lines = subtitle.count("\n") + 1
-    ax.set_title(
-        text,
-        loc="left",
-        pad=pad + (15 * lines if lines else 0),
-        fontweight="bold",
-        fontsize=size or plt.rcParams["axes.titlesize"],
-    )
-    if not subtitle:
-        return
-    ax.annotate(
-        subtitle,
-        xy=(0, 1),
-        xycoords="axes fraction",
-        xytext=(0, 3),
-        textcoords="offset points",
-        ha="left",
-        va="bottom",
-        fontsize=plt.rcParams["font.size"],
-        color="0.25",
-        annotation_clip=False,
-        linespacing=1.25,
-    )
+        # Title bottom + subtitle top meet with a normal ~0.5-line gap.
+        ax.text(
+            0.0, 1.10, text,
+            transform=ax.transAxes, ha="left", va="bottom",
+            fontsize=title_size, fontweight="bold", clip_on=False,
+        )
+        ax.text(
+            0.0, 1.07, subtitle,
+            transform=ax.transAxes, ha="left", va="top",
+            fontsize=plt.rcParams["font.size"], fontweight="normal",
+            color="0.25", clip_on=False, linespacing=1.3,
+        )
+    else:
+        ax.text(
+            0.0, 1.04, text,
+            transform=ax.transAxes, ha="left", va="bottom",
+            fontsize=title_size, fontweight="bold", clip_on=False,
+        )
 
 
 def figure_note(fig, text: str) -> None:

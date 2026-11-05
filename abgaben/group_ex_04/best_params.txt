@@ -1,0 +1,12 @@
+mf=1.5
+TT=0.5
+k=0.1
+Smax=120
+Imax=2.0
+cal_nse=0.4355
+cal_nash_log=0.3386
+cal_bias=-0.0758
+val_nse=0.4136
+val_nash_log=0.1903
+val_bias=-0.0658
+most_sensitive=k
